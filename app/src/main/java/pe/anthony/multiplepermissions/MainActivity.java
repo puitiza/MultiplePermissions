@@ -2,7 +2,9 @@ package pe.anthony.multiplepermissions;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -25,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
     FirstRunDetected firstRun;
 
     private Button buttonReal;
-    private int  Permission_All = 1 ;
+    private static final int  Permission_All = 1 ;
     private static final int PERMISO_LOCATION = 10;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,13 +57,15 @@ public class MainActivity extends AppCompatActivity {
 //                          startActivity(new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:" + BuildConfig.APPLICATION_ID)));
                       }
                   }else{
-                      Toast.makeText(getApplicationContext(),"Ya tienes el permiso",Toast.LENGTH_SHORT).show();
+                      permissionAllow();
                   }
                 }
             });
 //        }
     }
-
+    public void permissionAllow(){
+        Toast.makeText(getApplicationContext(),"Ya tienes el permiso",Toast.LENGTH_SHORT).show();
+    }
     public static boolean hasPermissions(Context context,String... permissions){
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && context != null && permissions!=null){
             for (String permission :permissions) {
@@ -84,4 +88,47 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode){
+            case Permission_All:
+                boolean allPermissionsGranted = true;
+                if(grantResults.length>0){
+                    for(int grantResult: grantResults){
+                        if(grantResult != PackageManager.PERMISSION_GRANTED){
+                            allPermissionsGranted = false;
+                            break;
+                        }
+                    }
+                }
+                if (allPermissionsGranted) {
+                    // Permission Granted
+                    Toast.makeText(getApplicationContext(),"Los permisos fueron permitido",Toast.LENGTH_SHORT).show();
+                } else {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                    builder.setTitle("Multiple Permissions");
+                    builder.setMessage("Se requieren todos los permisos para que la aplicación funcione correctamente" +
+                            ", por favor activarlos desde la configuración de su disositivo");
+                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            dialogInterface.dismiss();
+                        }
+                    });
+                    AlertDialog alertDialog = builder.create();
+                    alertDialog.show();
+                }
+                break;
+            case PERMISO_LOCATION:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // Permission Granted
+                    Toast.makeText(getApplicationContext(),"Ya tienes el permiso prro",Toast.LENGTH_SHORT).show();
+                } else {
+                    // Permission Denied
+                    Toast.makeText(MainActivity.this, "Permiso Denegado", Toast.LENGTH_SHORT).show();
+                }
+                break;
+            default: super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+    }
 }
