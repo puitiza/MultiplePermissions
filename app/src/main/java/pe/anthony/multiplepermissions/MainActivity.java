@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
                           ActivityCompat.requestPermissions(MainActivity.this,
                                   new String[]{Manifest.permission.ACCESS_FINE_LOCATION},PERMISO_LOCATION);
                       }else{
-                          startApplicationDetailsActivity(getPackageName());
+                            startApplicationDetailsActivity(getPackageName());
 //                          startActivity(new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:" + BuildConfig.APPLICATION_ID)));
                       }
                   }else{
@@ -78,7 +78,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void startApplicationDetailsActivity(String packageName) {
-
         Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
                 Uri.fromParts("package", packageName, null));
         intent.addCategory(Intent.CATEGORY_DEFAULT);
